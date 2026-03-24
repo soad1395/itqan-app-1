@@ -1,0 +1,106 @@
+ <!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<title>منصة الإتقان الذكي</title>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+
+<style>
+body{font-family:Arial;background:#eef3ef;margin:0}
+.header{background:#2f855a;color:#fff;padding:15px;text-align:center}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:15px}
+.card{background:#fff;padding:15px;border-radius:10px;cursor:pointer;text-align:center}
+.section{display:none;padding:15px}
+.active{display:block}
+input{width:100%;padding:8px;margin-top:5px}
+button{padding:8px;background:#2f855a;color:#fff;border:none;margin-top:5px}
+</style>
+</head>
+
+<body>
+
+<div class="header">منصة الإتقان الذكي ✔</div>
+
+<div id="home" class="section active">
+<input id="subject" placeholder="اسم المادة">
+<input id="teacher" placeholder="اسم المعلمة">
+
+<label style="background:#2f855a;color:#fff;padding:10px;display:block;margin-top:10px">
+رفع PDF
+<input type="file" accept="application/pdf" onchange="pdf(this)" hidden>
+</label>
+
+<div id="skills"></div>
+
+<div class="grid">
+<div class="card" onclick="go('students')">الطالبات</div>
+<div class="card" onclick="go('grades')">الدرجات</div>
+<div class="card" onclick="go('report')">التقارير</div>
+</div>
+</div>
+
+<div id="students" class="section">
+<input id="studentName">
+<button onclick="addStudent()">إضافة</button>
+<div id="list"></div>
+<button onclick="go('home')">رجوع</button>
+</div>
+
+<div id="grades" class="section">
+<input id="grade">
+<button onclick="saveGrade()">حفظ</button>
+<button onclick="go('home')">رجوع</button>
+</div>
+
+<div id="report" class="section">
+<div id="result"></div>
+<button onclick="go('home')">رجوع</button>
+</div>
+
+<script>
+
+function go(x){
+document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+document.getElementById(x).classList.add('active');
+}
+
+let students=[];
+function addStudent(){
+students.push(document.getElementById("studentName").value);
+render();
+}
+
+function render(){
+document.getElementById("list").innerHTML=students.map(s=>"<div>"+s+"</div>").join("");
+}
+
+let grades=[];
+function saveGrade(){
+grades.push(parseFloat(document.getElementById("grade").value));
+let avg=grades.reduce((a,b)=>a+b,0)/grades.length;
+document.getElementById("result").innerHTML="المتوسط: "+avg.toFixed(1);
+}
+
+async function pdf(input){
+let file=input.files[0];
+let reader=new FileReader();
+reader.onload=async function(){
+let pdf=await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
+let text="";
+for(let i=1;i<=pdf.numPages;i++){
+let p=await pdf.getPage(i);
+let t=await p.getTextContent();
+text+=t.items.map(x=>x.str).join(" ");
+}
+let match=text.match(/(أن\s\w+[^.]{10,50})/g);
+document.getElementById("skills").innerHTML=
+(match||[]).map(x=>"<div>"+x+"</div>").join("");
+};
+reader.readAsArrayBuffer(file);
+}
+
+</script>
+
+</body>
+</html>
