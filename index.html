@@ -4,103 +4,134 @@
 <meta charset="UTF-8">
 <title>منصة الإتقان الذكي</title>
 
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
 
 <style>
-body{font-family:Arial;background:#eef3ef;margin:0}
-.header{background:#2f855a;color:#fff;padding:15px;text-align:center}
-.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;padding:15px}
-.card{background:#fff;padding:15px;border-radius:10px;cursor:pointer;text-align:center}
+body{margin:0;font-family:Tajawal,Arial;background:#eef3ef}
+.header{background:#2f6f44;color:#fff;padding:20px;text-align:center}
+.menu{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px}
+.btn{background:#ffffff22;color:#fff;padding:8px 14px;border-radius:25px;cursor:pointer}
 .section{display:none;padding:15px}
 .active{display:block}
-input{width:100%;padding:8px;margin-top:5px}
-button{padding:8px;background:#2f855a;color:#fff;border:none;margin-top:5px}
+.card{background:#fff;padding:15px;border-radius:15px;margin-bottom:10px}
+input,textarea,select{width:100%;padding:8px;margin-top:5px}
+button{background:#2f6f44;color:#fff;border:none;padding:8px;margin-top:5px}
 </style>
 </head>
 
 <body>
 
-<div class="header">منصة الإتقان الذكي ✔</div>
+<div class="header">
+<h2>منصة الإتقان الذكي ✔</h2>
+<div class="menu">
+<div class="btn" onclick="go('home')">الرئيسية</div>
+<div class="btn" onclick="go('classes')">الفصول</div>
+<div class="btn" onclick="go('students')">الطالبات</div>
+<div class="btn" onclick="go('parents')">أولياء الأمور</div>
+<div class="btn" onclick="go('grades')">الدرجات</div>
+<div class="btn" onclick="go('analysis')">التحليل</div>
+<div class="btn" onclick="go('plans')">الخطط</div>
+<div class="btn" onclick="go('report')">التقارير</div>
+<div class="btn" onclick="go('honor')">التكريم</div>
+<div class="btn" onclick="go('archive')">الأرشيف</div>
+<div class="btn" onclick="go('games')">الألعاب</div>
+<div class="btn" onclick="go('sources')">المصادر</div>
+</div>
+</div>
 
+<!-- الرئيسية -->
 <div id="home" class="section active">
-<input id="subject" placeholder="اسم المادة">
-<input id="teacher" placeholder="اسم المعلمة">
+<div class="card">
+<input id="school" placeholder="المدرسة">
+<input id="teacher" placeholder="المعلمة">
+<input id="principal" placeholder="المديرة">
+<input id="subject" placeholder="المادة">
 
-<label style="background:#2f855a;color:#fff;padding:10px;display:block;margin-top:10px">
-رفع PDF
-<input type="file" accept="application/pdf" onchange="pdf(this)" hidden>
+<label style="background:#2f6f44;color:#fff;padding:10px;display:block">
+رفع المنهج PDF
+<input type="file" onchange="loadPDF(this)" hidden>
 </label>
 
 <div id="skills"></div>
-
-<div class="grid">
-<div class="card" onclick="go('students')">الطالبات</div>
-<div class="card" onclick="go('grades')">الدرجات</div>
-<div class="card" onclick="go('report')">التقارير</div>
 </div>
 </div>
 
+<!-- الفصول -->
+<div id="classes" class="section">
+<input id="className">
+<button onclick="addClass()">إضافة</button>
+<div id="classList"></div>
+</div>
+
+<!-- الطالبات -->
 <div id="students" class="section">
-<input id="studentName">
-<button onclick="addStudent()">إضافة</button>
-<div id="list"></div>
-<button onclick="go('home')">رجوع</button>
+<textarea id="studentsText"></textarea>
+<button onclick="addStudents()">إضافة</button>
+<div id="studentsList"></div>
 </div>
 
+<!-- أولياء الأمور -->
+<div id="parents" class="section">
+<input id="parentName">
+<button onclick="addParent()">إضافة</button>
+<div id="parentsList"></div>
+</div>
+
+<!-- الدرجات -->
 <div id="grades" class="section">
-<input id="grade">
-<button onclick="saveGrade()">حفظ</button>
-<button onclick="go('home')">رجوع</button>
+<select id="studentSelect"></select>
+<input id="exam" placeholder="60">
+<input id="tasks" placeholder="40">
+<button onclick="save()">حفظ</button>
 </div>
 
+<!-- التحليل -->
+<div id="analysis" class="section">
+<div id="analysisBox"></div>
+<canvas id="chart"></canvas>
+</div>
+
+<!-- الخطط -->
+<div id="plans" class="section">
+<div id="planBox"></div>
+</div>
+
+<!-- التقارير -->
 <div id="report" class="section">
-<div id="result"></div>
-<button onclick="go('home')">رجوع</button>
+<div id="reportContent"></div>
+<button onclick="generateReport()">تحديث</button>
+<button onclick="window.print()">طباعة</button>
+</div>
+
+<!-- التكريم -->
+<div id="honor" class="section">
+<div id="honorList"></div>
+</div>
+
+<!-- الأرشيف -->
+<div id="archive" class="section">
+<button onclick="saveArchive()">حفظ</button>
+<div id="archiveList"></div>
+</div>
+
+<!-- الألعاب -->
+<div id="games" class="section">
+<a href="https://wordwall.net" target="_blank">Wordwall</a><br>
+<a href="https://quizizz.com" target="_blank">Quizizz</a><br>
+<a href="https://kahoot.com" target="_blank">Kahoot</a>
+</div>
+
+<!-- المصادر -->
+<div id="sources" class="section">
+<a href="https://ien.edu.sa" target="_blank">عين</a><br>
+<a href="https://noor.moe.gov.sa" target="_blank">نور</a><br>
+<a href="https://schools.madrasati.sa" target="_blank">مدرستي</a>
 </div>
 
 <script>
 
+// تنقل
 function go(x){
 document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
-document.getElementById(x).classList.add('active');
-}
-
-let students=[];
-function addStudent(){
-students.push(document.getElementById("studentName").value);
-render();
-}
-
-function render(){
-document.getElementById("list").innerHTML=students.map(s=>"<div>"+s+"</div>").join("");
-}
-
-let grades=[];
-function saveGrade(){
-grades.push(parseFloat(document.getElementById("grade").value));
-let avg=grades.reduce((a,b)=>a+b,0)/grades.length;
-document.getElementById("result").innerHTML="المتوسط: "+avg.toFixed(1);
-}
-
-async function pdf(input){
-let file=input.files[0];
-let reader=new FileReader();
-reader.onload=async function(){
-let pdf=await pdfjsLib.getDocument(new Uint8Array(this.result)).promise;
-let text="";
-for(let i=1;i<=pdf.numPages;i++){
-let p=await pdf.getPage(i);
-let t=await p.getTextContent();
-text+=t.items.map(x=>x.str).join(" ");
-}
-let match=text.match(/(أن\s\w+[^.]{10,50})/g);
-document.getElementById("skills").innerHTML=
-(match||[]).map(x=>"<div>"+x+"</div>").join("");
-};
-reader.readAsArrayBuffer(file);
-}
-
-</script>
-
-</body>
-</html>
+document.getElementById(x
